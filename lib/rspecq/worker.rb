@@ -341,21 +341,9 @@ module RSpecQ
       Process.clock_gettime(Process::CLOCK_MONOTONIC) - since
     end
 
-    # Prints msg to standard output and emits an event to Sentry, if the
-    # SENTRY_DSN environment variable is set.
+    # Prints msg to standard output
     def log_event(msg, level, additional = {})
       warn msg
-
-      Sentry.capture_message(msg, level: level, extra: {
-        build: @build_id,
-        worker: @worker_id,
-        queue: queue.inspect,
-        files_or_dirs_to_run: files_or_dirs_to_run,
-        file_split_threshold: file_split_threshold,
-        heartbeat_updated_at: @heartbeat_updated_at,
-        object: inspect,
-        pid: Process.pid
-      }.merge(additional))
     end
   end
 end

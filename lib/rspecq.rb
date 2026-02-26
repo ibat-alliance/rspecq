@@ -1,5 +1,4 @@
 require "rspec/core"
-require "sentry-ruby"
 
 module RSpecQ
   # If a worker haven't executed an example for more than WORKER_LIVENESS_SEC

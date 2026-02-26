@@ -80,8 +80,6 @@ module RSpecQ
       puts summary(@queue.example_failures, @queue.non_example_errors,
         flaky_jobs)
 
-      flaky_jobs_to_sentry(flaky_jobs, build_duration)
-
       exit 1 if !@queue.build_successful?
     end
 
@@ -176,35 +174,6 @@ module RSpecQ
       min, sec = secs.divmod(60)
 
       format("%<min>d:%<sec>02d", min: min, sec: sec)
-    end
-
-    def flaky_jobs_to_sentry(jobs, build_duration)
-      return if jobs.empty?
-
-      jobs.each do |job|
-        filename = job.sub(/\[.+\]/, "")[%r{spec/.+}].split(":")[0]
-
-        extra = {
-          build: @build_id,
-          build_timeout: @timeout,
-          build_duration: build_duration,
-          location: @queue.job_location(job),
-          rerun_command: @queue.job_rerun_command(job),
-          worker: @queue.failed_job_worker(job)
-        }
-
-        tags = {
-          flaky: true,
-          spec_file: filename
-        }
-
-        Sentry.capture_message(
-          "Flaky test in #{filename}",
-          level: "warning",
-          extra: extra,
-          tags: tags
-        )
-      end
     end
   end
 end
